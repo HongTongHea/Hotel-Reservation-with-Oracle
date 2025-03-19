@@ -29,6 +29,7 @@ namespace Hotel_Reservation.Controllers
                 FullName = c.FirstName + " " + c.LastName
             }), "CustomerID", "FullName");
             ViewBag.Rooms = new SelectList(_context.Room, "RoomID", "RoomNumber");
+            ViewBag.Services = new SelectList(_context.Services, "ServiceID", "ServiceName");
             ViewBag.Reservations = new SelectList(_context.Reservation.Select(r => new
             {
                 ReservationID = r.ReservationID,
@@ -38,6 +39,25 @@ namespace Hotel_Reservation.Controllers
             return View(billing);
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetReservationTotalPrice(int id)
+        {
+            var reservation = await _context.Reservation
+                                            .Where(r => r.ReservationID == id)
+                                            .Select(r => r.TotalPrice ?? 0)
+                                            .FirstOrDefaultAsync();
+            return Json(reservation);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetServiceRate(int id)
+        {
+            var service = await _context.Services
+                                        .Where(s => s.ServiceID == id)
+                                        .Select(s => s.ServiceRate)
+                                        .FirstOrDefaultAsync();
+            return Json(service);
+        }
 
         public IActionResult Create()
         {
@@ -48,6 +68,7 @@ namespace Hotel_Reservation.Controllers
                 FullName = c.FirstName + " " + c.LastName
             }), "CustomerID", "FullName");
             ViewBag.Rooms = new SelectList(_context.Room, "RoomID", "RoomNumber");
+            ViewBag.Services = new SelectList(_context.Services, "ServiceID", "ServiceName");
             ViewBag.Reservations = new SelectList(_context.Reservation.Select(r => new
             {
                 ReservationID = r.ReservationID,
@@ -124,10 +145,10 @@ namespace Hotel_Reservation.Controllers
                 return NotFound();
             }
 
-            // Retrieve the billing record by BillingID
+
             var billing = _context.Billing
-                .Include(b => b.Customer)  // Include related Customer data
-                .Include(b => b.Room)      // Include related Room data
+                .Include(b => b.Customer)
+                .Include(b => b.Room)
                 .FirstOrDefault(b => b.BillingID == id);
 
             if (billing == null)
@@ -135,7 +156,7 @@ namespace Hotel_Reservation.Controllers
                 return NotFound();
             }
 
-            // Return the partial view with the billing record
+
             return View(billing);
         }
 

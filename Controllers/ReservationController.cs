@@ -104,6 +104,7 @@ namespace Hotel_Reservation.Controllers
                 FullName = c.FirstName + " " + c.LastName
             }), "CustomerID", "FullName", reservation.CustomerID);
             ViewBag.Rooms = new SelectList(_context.Room, "RoomID", "RoomNumber", reservation.RoomID);
+            ViewBag.RoomPrices = _context.Room.ToDictionary(r => r.RoomID, r => r.RoomPrice);
             return PartialView("Edit", reservation);
         }
 
@@ -177,6 +178,7 @@ namespace Hotel_Reservation.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Reservation deleted successfully!";
             }
+
             return RedirectToAction(nameof(Index));
         }
 

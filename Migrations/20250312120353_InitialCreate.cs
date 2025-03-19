@@ -93,7 +93,13 @@ namespace Hotel_Reservation.Migrations
                     ServiceID = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     ServiceName = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
-                    ServiceRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    ServiceRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Description = table.Column<string>(type: "NVARCHAR2(500)", maxLength: 500, nullable: true),
+                    Category = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: true),
+                    IsAvailable = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    DurationInMinutes = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,6 +168,7 @@ namespace Hotel_Reservation.Migrations
                     ReservationID = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     CustomerId = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     RoomId = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    ServiceID = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
@@ -188,6 +195,12 @@ namespace Hotel_Reservation.Migrations
                         principalTable: "Room",
                         principalColumn: "RoomID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Billing_Services_ServiceID",
+                        column: x => x.ServiceID,
+                        principalTable: "Services",
+                        principalColumn: "ServiceID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -209,6 +222,11 @@ namespace Hotel_Reservation.Migrations
                 name: "IX_Billing_RoomId",
                 table: "Billing",
                 column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Billing_ServiceID",
+                table: "Billing",
+                column: "ServiceID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservation_CustomerID",
@@ -234,13 +252,13 @@ namespace Hotel_Reservation.Migrations
                 name: "Employee");
 
             migrationBuilder.DropTable(
-                name: "Services");
-
-            migrationBuilder.DropTable(
                 name: "AppUser");
 
             migrationBuilder.DropTable(
                 name: "Reservation");
+
+            migrationBuilder.DropTable(
+                name: "Services");
 
             migrationBuilder.DropTable(
                 name: "Customer");

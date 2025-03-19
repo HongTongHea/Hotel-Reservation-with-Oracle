@@ -12,7 +12,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace Hotel_Reservation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250228124956_InitialCreate")]
+    [Migration("20250312120353_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -108,6 +108,9 @@ namespace Hotel_Reservation.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("NUMBER(10)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("TIMESTAMP(7)");
 
@@ -121,6 +124,8 @@ namespace Hotel_Reservation.Migrations
                     b.HasIndex("ReservationID");
 
                     b.HasIndex("RoomId");
+
+                    b.HasIndex("ServiceID");
 
                     b.ToTable("Billing");
                 });
@@ -315,6 +320,23 @@ namespace Hotel_Reservation.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceID"));
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)");
+
+                    b.Property<int?>("DurationInMinutes")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int?>("IsAvailable")
+                        .HasColumnType("NUMBER(10)");
+
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -322,6 +344,9 @@ namespace Hotel_Reservation.Migrations
 
                     b.Property<decimal>("ServiceRate")
                         .HasColumnType("decimal(10, 2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("ServiceID");
 
@@ -347,7 +372,7 @@ namespace Hotel_Reservation.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hotel_Reservation.Models.Reservation", null)
+                    b.HasOne("Hotel_Reservation.Models.Reservation", "Reservation")
                         .WithMany("Billings")
                         .HasForeignKey("ReservationID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,9 +384,19 @@ namespace Hotel_Reservation.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Hotel_Reservation.Models.Services", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Customer");
 
+                    b.Navigation("Reservation");
+
                     b.Navigation("Room");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Hotel_Reservation.Models.Reservation", b =>
